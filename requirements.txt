@@ -1,9 +1,7 @@
-Werkzeug
-Flask
-numpy
-Keras
-tensorflow
-gevent
-pillow
-h5py
-gunicorn
+Flask==0.12.2
+numpy==1.17.2
+Keras==2.3.1
+tensorflow==2.0.0
+gevent==1.5.0
+h5py==2.10.0
+gunicorn==19.7.1
