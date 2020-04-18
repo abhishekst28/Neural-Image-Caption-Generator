@@ -32,7 +32,7 @@ from gevent.pywsgi import WSGIServer
 
 
 
-model1= VGG16(weights='models/vgg16_weights.h5')
+model1= VGG16()
 model1.layers.pop()
 model1 = Model(inputs=model1.inputs, outputs=model1.layers[-1].output)
 
