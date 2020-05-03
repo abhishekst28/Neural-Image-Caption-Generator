@@ -6,7 +6,7 @@ import os
 import glob
 import re
 import numpy as np
-
+from gtts import gTTS 
 
 from pickle import load
 from numpy import argmax
@@ -31,12 +31,9 @@ from werkzeug.utils import secure_filename
 from gevent.pywsgi import WSGIServer
 
 
-
 model1= VGG16()
 model1.layers.pop()
 model1 = Model(inputs=model1.inputs, outputs=model1.layers[-1].output)
-
-
 
 MODEL_PATH = 'models/model_cap.h5'
 model2 = load_model(MODEL_PATH)
@@ -91,6 +88,13 @@ def index():
     return render_template('index.html')
 
 
+class ReturnValue(object):
+  __slots__ = ["y0", "y1"]
+  def __init__(self, y0, y1):
+     self.y0 = y0
+     self.y1 = y1
+     
+
 @app.route('/predict', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
@@ -111,9 +115,35 @@ def upload():
         result = generate_desc(tokenizer, photo, max_length)
         result = result.replace("startseq", "")
         result = result.replace("endseq", "")
-        return result
+        mytext = result
+        language = 'en'
+        myobj = gTTS(text=mytext, lang=language, slow=False) 
+        audio_name=str(file_path)
+        audio_name=audio_name.replace("uploads\\","")
+        audio_name=audio_name.replace("jpg","mp3")
+        audio_name=audio_name.replace("JPG","mp3")
+        audio_name=audio_name.replace("png","mp3")
+        audio_name=audio_name.replace("PNG","mp3")
+        print(audio_name)
+        audio_name="audio_files/"+audio_name
+        myobj.save(audio_name)
+
+        #return result
+        print("This is abs path :"+os.path.dirname(os.path.realpath(__file__)))
+        #file_name="start C:/Users/toshn/Desktop/mits/"+audio_name #add your system's path here
+        abc=os.path.dirname(os.path.realpath(__file__))
+        abc=abc.replace("\\","/")
+        #abc=abc.replace("static/j","")
+        file_name=abc+"/"+audio_name
+        print("this is file name of mp3 being played"+file_name)
+        os.system(file_name)
+
+        print(type('{} {}'.format(result, audio_name)))
+        print('{} {}'.format(result, audio_name))
+        return  '{} {} {}'.format(result,"delimits", audio_name)
     return None
 
 
 if __name__ == '__main__':
     app.run(debug=False, threaded=False)
+
